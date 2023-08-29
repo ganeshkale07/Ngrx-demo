@@ -1,12 +1,61 @@
-import { createAction, createReducer, on } from "@ngrx/store";
+import {
+  createAction,
+  createFeatureSelector,
+  createReducer,
+  createSelector,
+  on,
+} from '@ngrx/store';
+import { Product } from '../product';
+import * as appState from '../../state/app.state';
 
-export const productReducer = createReducer(
-    {showProductCode : false},
-    on(createAction('[Product] Toggle product code'), (state) =>{
-        console.log('initial state' ,state);
-        return {
-            ...state,
-            showProductCode : !state.showProductCode
-        }
-    })
-)
+//as product us feature module
+//so we extended the global state by adding state of product
+export interface State extends appState.State {
+  Products: ProductState;
+}
+
+//shape of product state
+export interface ProductState {
+  showProductCode: boolean;
+  currentProduct: Product;
+  products: Product[];
+}
+
+//Initial product state when application loads
+export const ProductInitialState: ProductState = {
+  showProductCode: true,
+  currentProduct: null,
+  products: [],
+};
+
+//Building selector
+//getProductFeatureState- "selector" for particular slice from store in these case it is products slice
+const getProductFeatureState = createFeatureSelector<ProductState>('Products');
+
+//create selector
+//getShowProductCode = "selector" for showproductcode
+export const getShowProductCode = createSelector(
+  getProductFeatureState,
+  (state) => state.showProductCode
+);
+
+export const getcurrentProduct = createSelector(
+  getProductFeatureState,
+  (state) => state.currentProduct
+);
+
+export const getproducts = createSelector(
+  getProductFeatureState,
+  (state) => state.products
+);
+
+//reducer function return-- product state
+export const productReducer = createReducer<ProductState>(
+  ProductInitialState,
+  on(createAction('[Product] Toggle product code'), (state) => {
+    return {
+      ...state,
+      showProductCode: !state.showProductCode,
+    };
+  })
+);

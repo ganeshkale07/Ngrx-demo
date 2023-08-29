@@ -5,11 +5,12 @@ import { Subscription } from 'rxjs';
 import { Product } from '../product';
 import { ProductService } from '../product.service';
 import { Store } from '@ngrx/store';
+import { State } from '../state/product.reducer';
 
 @Component({
   selector: 'pm-product-list',
   templateUrl: './product-list.component.html',
-  styleUrls: ['./product-list.component.css']
+  styleUrls: ['./product-list.component.css'],
 })
 export class ProductListComponent implements OnInit, OnDestroy {
   pageTitle = 'Products';
@@ -23,24 +24,27 @@ export class ProductListComponent implements OnInit, OnDestroy {
   selectedProduct: Product | null;
   sub: Subscription;
 
-  constructor(private productService: ProductService, private store:Store<any>) { }
+  constructor(
+    private productService: ProductService,
+    private store: Store<State>
+  ) {}
 
   ngOnInit(): void {
     this.sub = this.productService.selectedProductChanges$.subscribe(
-      currentProduct => this.selectedProduct = currentProduct
+      (currentProduct) => (this.selectedProduct = currentProduct)
     );
 
     this.productService.getProducts().subscribe({
-      next: (products: Product[]) => this.products = products,
-      error: err => this.errorMessage = err
+      next: (products: Product[]) => (this.products = products),
+      error: (err) => (this.errorMessage = err),
     });
 
     //fetching value from store
     this.store.select('Products').subscribe((products) => {
-      if(products){
+      //if (products) {
         this.displayCode = products.showProductCode;
-      }
-    })
+      //}
+    });
   }
 
   ngOnDestroy(): void {
@@ -48,13 +52,13 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   checkChanged(): void {
-    //After User clicked on button 
+    //After User clicked on button
     //dispatch the action
     //reducer execute the action realted store changes
-    //store is replaced with new state  
+    //store is replaced with new state
     this.store.dispatch({
-      type : '[Product] Toggle product code'
-    })
+      type: '[Product] Toggle product code',
+    });
   }
 
   newProduct(): void {
@@ -64,5 +68,4 @@ export class ProductListComponent implements OnInit, OnDestroy {
   productSelected(product: Product): void {
     this.productService.changeSelectedProduct(product);
   }
-
 }
