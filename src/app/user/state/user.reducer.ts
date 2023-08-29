@@ -1,6 +1,6 @@
 import { createAction, createReducer , on} from "@ngrx/store";
 
-export const maskUserName = createReducer(
+export const maskUserNameReducer = createReducer(
     {maskUserName : false},
     on(createAction('[maskUserName] Toggle mask user'), (state) => {
         return {

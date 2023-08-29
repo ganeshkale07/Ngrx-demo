@@ -5,7 +5,7 @@ import { SharedModule } from '../shared/shared.module';
 
 import { LoginComponent } from './login.component';
 import { StoreModule } from '@ngrx/store';
-import { maskUserName } from './state/user.reducer';
+import { maskUserNameReducer } from './state/user.reducer';
 
 const userRoutes: Routes = [
   { path: 'login', component: LoginComponent }
@@ -15,7 +15,7 @@ const userRoutes: Routes = [
   imports: [
     SharedModule,
     RouterModule.forChild(userRoutes),
-    StoreModule.forFeature('maskUserName',maskUserName)
+    StoreModule.forFeature('User',maskUserNameReducer)
   ],
   declarations: [
     LoginComponent
