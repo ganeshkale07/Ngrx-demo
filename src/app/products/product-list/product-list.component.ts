@@ -7,6 +7,8 @@ import { ProductService } from '../product.service';
 import { Store } from '@ngrx/store';
 import { State } from '../state/product.reducer';
 
+import { getShowProductCode } from "../state/product.reducer";
+
 @Component({
   selector: 'pm-product-list',
   templateUrl: './product-list.component.html',
@@ -40,9 +42,9 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
 
     //fetching value from store
-    this.store.select('Products').subscribe((products) => {
+    this.store.select(getShowProductCode).subscribe((products) => {
       //if (products) {
-        this.displayCode = products.showProductCode;
+        this.displayCode = products;
       //}
     });
   }
