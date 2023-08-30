@@ -7,6 +7,7 @@ import {
 } from '@ngrx/store';
 import { Product } from '../product';
 import * as appState from '../../state/app.state';
+import * as productActions from './product.action';
 
 //as product us feature module
 //so we extended the global state by adding state of product
@@ -52,10 +53,34 @@ export const getproducts = createSelector(
 //reducer function return-- product state
 export const productReducer = createReducer<ProductState>(
   ProductInitialState,
-  on(createAction('[Product] Toggle product code'), (state) => {
+  on(productActions.toggleProductCode, (state) => {
     return {
       ...state,
       showProductCode: !state.showProductCode,
+    };
+  }),
+  on(productActions.currentProduct, (state, action): ProductState => {
+    return {
+      ...state,
+      currentProduct: action.product,
+    };
+  }),
+  on(productActions.clearedCurrentProduct, (state): ProductState => {
+    return {
+      ...state,
+      currentProduct: null,
+    };
+  }),
+  on(productActions.InitializedCurrentProduct, (state): ProductState => {
+    return {
+      ...state,
+      currentProduct: {
+        id: 0,
+        productCode: 'NB-TR',
+        productName: null,
+        description: '',
+        starRating: 3,
+      },
     };
   })
 );
