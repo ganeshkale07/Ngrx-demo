@@ -16,4 +16,18 @@ export const InitializedCurrentProduct = createAction(
   '[Product] Initialize current product'
 );
 
+export const loadProduct = createAction(
+  '[Product] load Product'
+);
+
+export const loadProductSuccess = createAction(
+  '[Product] Load Product Success',
+  props<{products : Product[]}>()
+);
+
+export const loadProductfail = createAction(
+  '[Product] Load Product Fail',
+  props<{error : string}>()
+);
+
 

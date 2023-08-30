@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { Product } from '../product';
 import { ProductService } from '../product.service';
 import { Store } from '@ngrx/store';
-import { State, getcurrentProduct } from '../state/product.reducer';
+import { State, getErrorMsg, getcurrentProduct, getproducts } from '../state/product.reducer';
 
 import { getShowProductCode } from "../state/product.reducer";
 import * as productActions from '../state/product.action';
@@ -17,15 +17,12 @@ import * as productActions from '../state/product.action';
 })
 export class ProductListComponent implements OnInit {
   pageTitle = 'Products';
-  errorMessage: string;
+  errorMessage$: Observable<string>;
 
-  displayCode: boolean;
-
-  products: Product[];
-
-  // Used to highlight the selected product in the list
-  selectedProduct: Product | null;
   sub: Subscription;
+  products$: Observable<Product[]>;
+  displayCode$: Observable<boolean>;
+  selectedProduct$: Observable<Product>;
 
   constructor(
     private productService: ProductService,
@@ -33,21 +30,26 @@ export class ProductListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.store.select(getcurrentProduct).subscribe(
-      (currentProduct) => (this.selectedProduct = currentProduct)
-    );
 
-    this.productService.getProducts().subscribe({
-      next: (products: Product[]) => (this.products = products),
-      error: (err) => (this.errorMessage = err),
-    });
+    /** We do not need service call and store that value in local variable as our store has all products */
+    // this.productService.getProducts().subscribe({
+    //   next: (products: Product[]) => (this.products = products),
+    //   error: (err) => (this.errorMessage = err),
+    // });
+
+    //get products from store
+    this.products$ = this.store.select(getproducts);
+
+    //dispatch - to get all products
+    this.store.dispatch(productActions.loadProduct());
+
+    this.selectedProduct$ = this.store.select(getcurrentProduct);
 
     //fetching value from store
-    this.store.select(getShowProductCode).subscribe((products) => {
-      //if (products) {
-        this.displayCode = products;
-      //}
-    });
+    this.displayCode$ = this.store.select(getShowProductCode);
+
+    //get error
+    this.errorMessage$ = this.store.select(getErrorMsg);
   }
 
 

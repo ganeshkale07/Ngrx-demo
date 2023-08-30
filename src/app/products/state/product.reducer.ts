@@ -1,5 +1,4 @@
 import {
-  createAction,
   createFeatureSelector,
   createReducer,
   createSelector,
@@ -20,6 +19,7 @@ export interface ProductState {
   showProductCode: boolean;
   currentProduct: Product;
   products: Product[];
+  error :string
 }
 
 //Initial product state when application loads
@@ -27,6 +27,7 @@ export const ProductInitialState: ProductState = {
   showProductCode: true,
   currentProduct: null,
   products: [],
+  error:''
 };
 
 //Building selector
@@ -48,6 +49,11 @@ export const getcurrentProduct = createSelector(
 export const getproducts = createSelector(
   getProductFeatureState,
   (state) => state.products
+);
+
+export const getErrorMsg = createSelector(
+  getProductFeatureState,
+  (state) => state.error
 );
 
 //reducer function return-- product state
@@ -82,5 +88,20 @@ export const productReducer = createReducer<ProductState>(
         starRating: 3,
       },
     };
+  }),
+  on(productActions.loadProductSuccess, (state, action):ProductState => {
+    return {
+      ...state,
+      products : action.products,
+      //when after subsequent request whenwe get response cleared the error
+      error : ''
+    }
+  }),
+  on(productActions.loadProductfail, (state, action):ProductState => {
+    return {
+      ...state,
+      products : [],
+      error : action.error
+    }
   })
 );
