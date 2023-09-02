@@ -44,3 +44,31 @@ export const updateProductfail = createAction(
   '[Product] Update Product Fail',
   props<{ error: string }>()
 );
+
+//create Product action
+export const createProduct = createAction('[Product-Edit] Create Product',
+props<{ product : Product }>());
+
+export const createProductSuccess = createAction(
+  '[Product-Edit] Create Product Success',
+  props<{ product: Product }>()
+);
+
+export const createProductfail = createAction(
+  '[Product-Edit] Create Product Fail',
+  props<{ error: string }>()
+);
+
+//Delete Product action
+export const deleteProduct = createAction('[Product-Edit] delete Product',
+props<{ currentProductId : number }>());
+
+export const deleteProductSuccess = createAction(
+  '[Product-Edit] delete Product Success',
+  props<{ currentProductId : number }>()
+);
+
+export const deleteProductfail = createAction(
+  '[Product-Edit] delete Product Fail',
+  props<{ error: string }>()
+);

@@ -10,7 +10,7 @@ import { Product } from './product';
   providedIn: 'root',
 })
 export class ProductService {
-  private productsUrl = 'api/productDDDs';
+  private productsUrl = 'api/products';
 
   private selectedProductSource = new BehaviorSubject<Product | null>(null);
   selectedProductChanges$ = this.selectedProductSource.asObservable();
