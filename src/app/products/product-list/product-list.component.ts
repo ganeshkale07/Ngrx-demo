@@ -5,9 +5,14 @@ import { Observable, Subscription } from 'rxjs';
 import { Product } from '../product';
 import { ProductService } from '../product.service';
 import { Store } from '@ngrx/store';
-import { State, getErrorMsg, getcurrentProduct, getproducts } from '../state/product.reducer';
+import {
+  State,
+  getErrorWhilefetchingProduct,
+  getcurrentProduct,
+  getproducts,
+} from '../state/product.reducer';
 
-import { getShowProductCode } from "../state/product.reducer";
+import { getShowProductCode } from '../state/product.reducer';
 import * as productActions from '../state/product.action';
 
 @Component({
@@ -24,13 +29,9 @@ export class ProductListComponent implements OnInit {
   displayCode$: Observable<boolean>;
   selectedProduct$: Observable<Product>;
 
-  constructor(
-    private productService: ProductService,
-    private store: Store<State>
-  ) {}
+  constructor(private store: Store<State>) {}
 
   ngOnInit(): void {
-
     /** We do not need service call and store that value in local variable as our store has all products */
     // this.productService.getProducts().subscribe({
     //   next: (products: Product[]) => (this.products = products),
@@ -49,10 +50,10 @@ export class ProductListComponent implements OnInit {
     this.displayCode$ = this.store.select(getShowProductCode);
 
     //get error
-    this.errorMessage$ = this.store.select(getErrorMsg);
+    this.errorMessage$ = this.store.select(getErrorWhilefetchingProduct);
+
+    this.errorMessage$.subscribe((val) => console.log(val));
   }
-
-
 
   checkChanged(): void {
     //After User clicked on button
@@ -68,6 +69,8 @@ export class ProductListComponent implements OnInit {
 
   productSelected(product: Product): void {
     //this.productService.changeSelectedProduct(product);
-    this.store.dispatch(productActions.currentProduct({product}));
+    this.store.dispatch(
+      productActions.currentProduct({ currentProductId: product.id })
+    );
   }
 }

@@ -17,17 +17,17 @@ export interface State extends appState.State {
 //shape of product state
 export interface ProductState {
   showProductCode: boolean;
-  currentProduct: Product;
+  currentProductId: number | null;
   products: Product[];
-  error :string
+  error: string;
 }
 
 //Initial product state when application loads
 export const ProductInitialState: ProductState = {
   showProductCode: true,
-  currentProduct: null,
+  currentProductId: null,
   products: [],
-  error:''
+  error: '',
 };
 
 //Building selector
@@ -41,9 +41,29 @@ export const getShowProductCode = createSelector(
   (state) => state.showProductCode
 );
 
+export const getcurrentProductId = createSelector(
+  getProductFeatureState,
+  (state) => state.currentProductId
+);
+
 export const getcurrentProduct = createSelector(
   getProductFeatureState,
-  (state) => state.currentProduct
+  getcurrentProductId,
+  (state, currentProductId) => {
+    if (currentProductId == 0) {
+      return {
+        id: 0,
+        productCode: 'new',
+        productName: '',
+        description: '',
+        starRating: 3,
+      };
+    } else {
+      return currentProductId
+        ? state.products.find((product) => product.id == currentProductId)
+        : null;
+    }
+  }
 );
 
 export const getproducts = createSelector(
@@ -51,7 +71,7 @@ export const getproducts = createSelector(
   (state) => state.products
 );
 
-export const getErrorMsg = createSelector(
+export const getErrorWhilefetchingProduct = createSelector(
   getProductFeatureState,
   (state) => state.error
 );
@@ -68,40 +88,51 @@ export const productReducer = createReducer<ProductState>(
   on(productActions.currentProduct, (state, action): ProductState => {
     return {
       ...state,
-      currentProduct: action.product,
+      currentProductId: action.currentProductId,
     };
   }),
   on(productActions.clearedCurrentProduct, (state): ProductState => {
     return {
       ...state,
-      currentProduct: null,
+      currentProductId: null,
     };
   }),
   on(productActions.InitializedCurrentProduct, (state): ProductState => {
     return {
       ...state,
-      currentProduct: {
-        id: 0,
-        productCode: 'NB-TR',
-        productName: null,
-        description: '',
-        starRating: 3,
-      },
+      currentProductId: 0,
     };
   }),
-  on(productActions.loadProductSuccess, (state, action):ProductState => {
+  on(productActions.loadProductSuccess, (state, action): ProductState => {
     return {
       ...state,
-      products : action.products,
+      products: action.products,
       //when after subsequent request whenwe get response cleared the error
-      error : ''
-    }
+      error: '',
+    };
   }),
-  on(productActions.loadProductfail, (state, action):ProductState => {
+  on(productActions.loadProductfail, (state, action): ProductState => {
     return {
       ...state,
-      products : [],
-      error : action.error
-    }
+      products: [],
+      error: action.error,
+    };
+  }),
+  on(productActions.updateProductSuccess, (state, action): ProductState => {
+    const updatedProductList = state.products.map((item) =>
+      item.id == action.product.id ? action.product : item
+    );
+    return {
+      ...state,
+      products: updatedProductList,
+      //when after subsequent request whenwe get response cleared the error
+      error: '',
+    };
+  }),
+  on(productActions.updateProductfail, (state, action): ProductState => {
+    return {
+      ...state,
+      error: action.error,
+    };
   })
 );
